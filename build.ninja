@@ -1,0 +1,15 @@
+builddir = build
+cxx = clang++ -fcolor-diagnostics
+cflags = -g -Wall
+libs = -lSDL2 -lm
+
+rule cxx
+  command = $cxx -c $in -o $out
+  description = CXX $out
+
+rule link
+  command = $cxx $ldflags -o $out $in $libs
+  description = LINK $out
+
+build $builddir/bunch_of_dots.o: cxx src/bunch_of_dots.cpp
+build $builddir/bunch_of_dots: link $builddir/bunch_of_dots.o

@@ -1,0 +1,11 @@
+# ninja log v5
+0	95	0	build/bunch_of_dots.o	19104c3454b73040
+95	131	0	build/bunch_of_dots	225ed141ce9999fe
+0	119	0	build/bunch_of_dots.o	19104c3454b73040
+119	165	0	build/bunch_of_dots	225ed141ce9999fe
+0	91	0	build/bunch_of_dots.o	19104c3454b73040
+92	121	0	build/bunch_of_dots	225ed141ce9999fe
+0	102	0	build/bunch_of_dots.o	4274cbec04f1b2fa
+102	152	0	build/bunch_of_dots	1a5b3626c2652fe0
+0	129	0	build/bunch_of_dots.o	4274cbec04f1b2fa
+130	178	0	build/bunch_of_dots	1a5b3626c2652fe0

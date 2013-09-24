@@ -1,10 +1,6 @@
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "SDL2/SDL.h"
-
-using namespace std;
+#include <cstdlib>
+#include <vector>
 
 int main(int argc, char const *argv[])
 {
@@ -24,6 +20,6 @@ int main(int argc, char const *argv[])
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
     SDL_Delay(10000);
+
     return 0;
 }
-
