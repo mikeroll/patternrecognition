@@ -1,6 +1,20 @@
 #include "SDL2/SDL.h"
 #include <cstdlib>
+#include <cstdio>
 #include <vector>
+
+class DotFactory
+{
+    void Populate();
+    std::vector<int> dots;
+    int screen_h, screen_w;
+    int n;
+    int kernels[];
+public:
+    DotFactory(int n, int classes, int w, int h) : dots(n * 2), screen_w(w), screen_h(h) { };
+    int* operator[](int row) { return &dots[row * 2]; }
+    ~DotFactory();
+};
 
 int main(int argc, char const *argv[])
 {
@@ -16,10 +30,7 @@ int main(int argc, char const *argv[])
     SDL_Renderer *renderer = SDL_CreateRenderer(screen, -1,
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
     );
-    SDL_SetRenderDrawColor(renderer, 127, 127, 255, 255);
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
-    SDL_Delay(10000);
+
 
     return 0;
 }
