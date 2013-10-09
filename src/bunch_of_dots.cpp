@@ -35,7 +35,8 @@ public:
     Dot operator[](int i) { return dots[i]; }
 };
 
-DotFactory::DotFactory(int n, int classes, int w, int h) : n(n), classes(classes), screen_w(w), screen_h(h)
+
+DotFactory::DotFactory(int n, int classes, int w, int h) :n (n), classes(classes), screen_w(w), screen_h(h)
 {
         srand(time(NULL));
         Populate();
@@ -98,7 +99,6 @@ void DotFactory::Distribute()
                 dots[i].class_index = j;
             }
         }
-        printf("%d,%d -> %d\n", dots[i].x, dots[i].y, min_index);
     }
 }
 
@@ -129,14 +129,16 @@ void DotFactory::Draw(SDL_Renderer *renderer)
 
 void DotFactory::DrawKernel(SDL_Renderer *renderer, int i)
 {
-    int xdelta = 5;
-    int ydelta = 5;
+    int delta = 5;
     SDL_Rect rect;
-    rect.x = dots[i].x - xdelta;
-    rect.y = dots[i].y - xdelta;
-    rect.w = xdelta * 2;
-    rect.h = ydelta * 2;
+    rect.x = dots[i].x - delta;
+    rect.y = dots[i].y - delta;
+    rect.w = delta * 2 + 1;
+    rect.h = rect.w;
     SDL_RenderFillRect(renderer, &rect);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderDrawLine(renderer, dots[i].x, dots[i].y-delta, dots[i].x, dots[i].y+delta);
+    SDL_RenderDrawLine(renderer, dots[i].x-delta, dots[i].y, dots[i].x+delta, dots[i].y);
 }
 
 
