@@ -14,6 +14,14 @@ struct Dot
     int is_kernel;
 };
 
+struct DotClass
+{
+    int index;
+    SDL_Color color;
+    int kernel;
+    vector< int > members;
+};
+
 class DotFactory
 {
     int screen_w, screen_h;
