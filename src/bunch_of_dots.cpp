@@ -25,18 +25,17 @@ struct DotClass
 class DotFactory
 {
     int screen_w, screen_h;
-    int n, classes;
+    int n, class_count;
     vector< Dot > dots;
-    vector< int > kernel_indexes;
-    vector< SDL_Color > class_colors;
+    vector< DotClass > dot_classes;
 
     void Populate();
     void ChooseKernels();
-    void GenerateColors();
+    void CreateClasses();
     void DrawKernel(SDL_Renderer *renderer, int i);
 
 public:
-    DotFactory(int n, int classes, int w, int h);
+    DotFactory(int n, int class_count, int w, int h);
     ~DotFactory();
     void Distribute();
     void Draw(SDL_Renderer *renderer);
@@ -44,12 +43,11 @@ public:
 };
 
 
-DotFactory::DotFactory(int n, int classes, int w, int h) :n (n), classes(classes), screen_w(w), screen_h(h)
+DotFactory::DotFactory(int n, int class_count, int w, int h) :n (n), class_count(class_count), screen_w(w), screen_h(h)
 {
         srand(time(NULL));
         Populate();
-        ChooseKernels();
-        GenerateColors();
+        CreateClasses();
 }
 
 void DotFactory::Populate()
@@ -64,25 +62,18 @@ void DotFactory::Populate()
     }
 }
 
-void DotFactory::ChooseKernels()
+void DotFactory::CreateClasses()
 {
-    kernel_indexes.resize(classes);
-    for (int i = 0; i < classes; ++i)
+    dot_classes.resize(class_count);
+    for (int i = 0; i < class_count; ++i)
     {
-        kernel_indexes[i] = i;
         dots[i].is_kernel = true;
-    }
-}
+        dot_classes[i].kernel = i;
 
-void DotFactory::GenerateColors()
-{
-    class_colors.resize(classes);
-    for (int i = 0; i < classes; ++i)
-    {
-        class_colors[i].r = rand() % 128 + 127;
-        class_colors[i].g = rand() % 256;
-        class_colors[i].b = rand() % 256;
-        class_colors[i].a = 255;
+        dot_classes[i].color.r = rand() % 128 + 127;
+        dot_classes[i].color.g = rand() % 256;
+        dot_classes[i].color.b = rand() % 256;
+        dot_classes[i].color.a = 255;
     }
 }
 
@@ -95,16 +86,17 @@ void DotFactory::Distribute()
     for (int i = 0; i < n; ++i)
     {
         min = screen_h * screen_h + screen_w * screen_w;
-        for (int j = 0; j < classes; ++j)
+        for (int j = 0; j < class_count; ++j)
         {
-            dx = (dots[i].x - dots[kernel_indexes[j]].x);
-            dy = (dots[i].y - dots[kernel_indexes[j]].y);
+            dx = (dots[i].x - dots[dot_classes[j].kernel].x);
+            dy = (dots[i].y - dots[dot_classes[j].kernel].y);
             newmin = dx * dx + dy * dy;
             if (newmin < min)
             {
                 min = newmin;
                 min_index = j;
                 dots[i].class_index = j;
+                dot_classes[j].members.push_back(i);
             }
         }
     }
@@ -120,7 +112,7 @@ void DotFactory::Draw(SDL_Renderer *renderer)
         }
         else
         {
-            SDL_Color color = class_colors[dots[i].class_index];
+            SDL_Color color = dot_classes[dots[i].class_index].color;
             SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         }
         if (dots[i].is_kernel)
@@ -169,13 +161,16 @@ int main(int argc, char const *argv[])
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    DotFactory *lol = new DotFactory(10000, 10, 1920, 1080);
+    int dots = atoi(argv[1]);
+    int classes = atoi(argv[2]);
+
+    DotFactory *lol = new DotFactory(dots, classes, 1920, 1080);
     lol->Draw(renderer);
     lol->Distribute();
     lol->Draw(renderer);
 
     // Event loop
-    bool out;
+    bool out = false;
     SDL_Event event;
     while ((!out) && (SDL_WaitEvent(&event)))
     {
