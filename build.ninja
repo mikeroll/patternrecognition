@@ -11,5 +11,5 @@ rule link
   command = $cxx $ldflags -o $out $in $libs
   description = LINK $out
 
-build $builddir/bunch_of_dots.o: cxx src/bunch_of_dots.cpp
-build $builddir/bunch_of_dots: link $builddir/bunch_of_dots.o
+build $builddir/dot_factory.o: cxx src/dot_factory.cpp
+build $builddir/dot_factory: link $builddir/dot_factory.o

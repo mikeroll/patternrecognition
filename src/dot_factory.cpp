@@ -1,46 +1,7 @@
-#include "SDL2/SDL.h"
-#include <cstdlib>
-#include <cstdio>
 #include <ctime>
-#include <vector>
+#include "SDL2/SDL.h"
 
-using std::vector;
-
-struct Dot
-{
-    int x;
-    int y;
-    int class_index;
-    int is_kernel;
-};
-
-struct DotClass
-{
-    int index;
-    SDL_Color color;
-    int kernel;
-    vector< int > members;
-};
-
-class DotFactory
-{
-    int screen_w, screen_h;
-    int n, class_count;
-    vector< Dot > dots;
-    vector< DotClass > dot_classes;
-
-    void Populate();
-    void ChooseKernels();
-    void CreateClasses();
-    void DrawKernel(SDL_Renderer *renderer, int i);
-
-public:
-    DotFactory(int n, int class_count, int w, int h);
-    ~DotFactory();
-    void Distribute();
-    void Draw(SDL_Renderer *renderer);
-    Dot operator[](int i) { return dots[i]; }
-};
+#include "dot_factory.h"
 
 
 DotFactory::DotFactory(int n, int class_count, int w, int h) :n (n), class_count(class_count), screen_w(w), screen_h(h)
@@ -144,6 +105,16 @@ void DotFactory::DrawKernel(SDL_Renderer *renderer, int i)
 
 int main(int argc, char const *argv[])
 {
+    if (argc != 3)
+    {
+        puts("Usage: dot_factory <elements> <classes>");
+        exit(EXIT_FAILURE);
+    }
+
+    int dots = atoi(argv[1]);
+    int classes = atoi(argv[2]);
+
+
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
 
     SDL_Window *window = SDL_CreateWindow("Bunch of dots v0.1",
@@ -160,9 +131,6 @@ int main(int argc, char const *argv[])
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-
-    int dots = atoi(argv[1]);
-    int classes = atoi(argv[2]);
 
     DotFactory *lol = new DotFactory(dots, classes, 1920, 1080);
     lol->Draw(renderer);
