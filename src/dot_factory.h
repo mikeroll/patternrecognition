@@ -27,7 +27,7 @@ class DotFactory
     // Utiltity methods
     void CreatePool();
     void ChooseKernels();
-    void CreateClasses();
+    void CreateClasses(int k);
     void DrawKernel(SDL_Renderer *renderer, int i);
 
     // Algorithm routines
@@ -35,11 +35,11 @@ class DotFactory
     bool Normalize();
 
 public:
-    DotFactory(int n, int class_count, int w, int h);
+    DotFactory(int n, int w, int h);
     ~DotFactory();
 
     void Draw(SDL_Renderer *renderer);
-    void KMeans(SDL_Renderer *renderer);
+    void KMeans(int classes, SDL_Renderer *renderer);
 };
 
 #endif

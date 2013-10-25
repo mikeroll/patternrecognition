@@ -3,11 +3,10 @@
 
 #include "dot_factory.h"
 
-DotFactory::DotFactory(int n, int class_count, int w, int h) : n(n), class_count(class_count), w(w), h(h)
+DotFactory::DotFactory(int n, int w, int h) : n(n), w(w), h(h)
 {
     srand(time(NULL));
     CreatePool();
-    CreateClasses();
 }
 
 void DotFactory::CreatePool()
@@ -20,8 +19,9 @@ void DotFactory::CreatePool()
     }
 }
 
-void DotFactory::CreateClasses()
+void DotFactory::CreateClasses(int k)
 {
+    class_count = k;
     classes.resize(class_count);
     for (int i = 0; i < class_count; ++i)
     {
@@ -65,10 +65,10 @@ bool DotFactory::Normalize()
     for (int k = 0; k < class_count; ++k)
     {
         Dot new_kernel;
+        long min_deviation = (w * w + h * h) * classes[k].members.size();
         for (int i = 0; i < classes[k].members.size(); ++i)
         {
             long deviation = 0;
-            long min_deviation = (w * w + h * h) * classes[k].members.size();
             for (int j = 0; j < classes[k].members.size(); ++j)
             {
                 int dx = classes[k].members[j].x - classes[k].members[i].x;
@@ -82,7 +82,7 @@ bool DotFactory::Normalize()
             }
         }
         if ((classes[k].kernel.x != new_kernel.x) &&
-            (classes[k].kernel.x != new_kernel.x))
+            (classes[k].kernel.y != new_kernel.y))
         {
             classes[k].kernel = new_kernel;
             trigger = true;
@@ -122,71 +122,13 @@ void DotFactory::DrawKernel(SDL_Renderer *renderer, int i)
     SDL_RenderDrawLine(renderer, kern.x-delta+1, kern.y, kern.x+delta-1, kern.y);
 }
 
-void DotFactory::KMeans(SDL_Renderer *renderer)
+void DotFactory::KMeans(int k, SDL_Renderer *renderer)
 {
+    CreateClasses(k);
     do
     {
         Redistribute();
         if (renderer != NULL)
             Draw(renderer);
     } while (Normalize());
-}
-
-int main(int argc, char const *argv[])
-{
-    if (argc != 3)
-    {
-        puts("Usage: dot_factory <elements> <classes>");
-        exit(EXIT_FAILURE);
-    }
-
-    int dots = atoi(argv[1]);
-    int classes = atoi(argv[2]);
-
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
-
-    SDL_Window *window = SDL_CreateWindow("Bunch of dots v0.1",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        0, 0,
-        SDL_WINDOW_FULLSCREEN_DESKTOP |
-        SDL_WINDOW_BORDERLESS
-    );
-
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1,
-        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
-    );
-
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-
-    DotFactory *kmeans_demo = new DotFactory(dots, classes, 1920, 1080);
-    kmeans_demo->KMeans(renderer);
-
-    // Event loop
-    bool out = false;
-    SDL_Event event;
-    while ((!out) && (SDL_WaitEvent(&event)))
-    {
-        switch(event.type)
-        {
-            case SDL_QUIT:
-                out = true;
-                break;
-
-            case SDL_KEYDOWN:
-                out = true;
-                break;
-
-            default:
-                break;
-        }
-
-    }
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-
-    return 0;
 }
