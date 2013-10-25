@@ -13,7 +13,7 @@ struct Dot
 struct DotClass
 {
     SDL_Color color;
-    int kernel_index;
+    Dot kernel;
     std::vector< Dot > members;
 };
 

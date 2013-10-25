@@ -25,7 +25,7 @@ void DotFactory::CreateClasses()
     classes.resize(class_count);
     for (int i = 0; i < class_count; ++i)
     {
-        classes[i].kernel_index = i;
+        classes[i].kernel = dots[i];
         classes[i].color.r = rand() % 128 + 127;
         classes[i].color.g = rand() % 256;
         classes[i].color.b = rand() % 256;
@@ -48,7 +48,7 @@ void DotFactory::Redistribute()
         int candidate;
         for (int k = 0; k < class_count; ++k)
         {
-            Dot kern = dots[classes[k].kernel_index];
+            Dot kern = classes[k].kernel;
             int dx = kern.x - dots[i].x;
             int dy = kern.y - dots[i].y;
             int newmin = dx * dx + dy * dy;
@@ -62,8 +62,35 @@ void DotFactory::Redistribute()
     }
 }
 
+void DotFactory::Normalize()
+{
+    for (int k = 0; k < class_count; ++k)
+    {
+        Dot new_kernel;
+        for (int i = 0; i < classes[k].members.size(); ++i)
+        {
+            long deviation = 0;
+            long min_deviation = (w * w + h * h) * classes[k].members.size();
+            for (int j = 0; j < classes[k].members.size(); ++j)
+            {
+                int dx = classes[k].members[j].x - classes[k].members[i].x;
+                int dy = classes[k].members[j].y - classes[k].members[i].y;
+                deviation += dx * dx + dy * dy;
+            }
+            if (deviation < min_deviation)
+            {
+                min_deviation = deviation;
+                new_kernel = classes[k].members[i];
+            }
+        }
+        classes[k].kernel = new_kernel;
+    }
+}
+
 void DotFactory::Draw(SDL_Renderer *renderer)
 {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
     for (int i = 0; i < class_count; ++i)
     {
         SDL_Point *dots_storage = (SDL_Point *)(&(classes[i].members[0]));
@@ -79,7 +106,7 @@ void DotFactory::Draw(SDL_Renderer *renderer)
 void DotFactory::DrawKernel(SDL_Renderer *renderer, int i)
 {
     int delta = 7;
-    Dot kern = classes[i].members[classes[i].kernel_index];
+    Dot kern = classes[i].kernel;
     SDL_Rect rect;
     rect.x = kern.x - delta;
     rect.y = kern.y - delta;
@@ -122,8 +149,6 @@ int main(int argc, char const *argv[])
     SDL_RenderClear(renderer);
 
     DotFactory *lol = new DotFactory(dots, classes, 1920, 1080);
-    lol->Redistribute();
-    lol->Draw(renderer);
 
     // Event loop
     bool out = false;
