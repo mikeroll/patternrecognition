@@ -8,26 +8,23 @@ struct Dot
 {
     int x;
     int y;
-    int class_index;
-    int is_kernel;
 };
 
 struct DotClass
 {
-    int index;
     SDL_Color color;
-    int kernel;
-    std::vector< int > members;
+    int kernel_index;
+    std::vector< Dot > members;
 };
 
 class DotFactory
 {
-    int screen_w, screen_h;
+    int w, h;
     int n, class_count;
+    std::vector< DotClass > classes;
     std::vector< Dot > dots;
-    std::vector< DotClass > dot_classes;
 
-    void Populate();
+    void CreatePool();
     void ChooseKernels();
     void CreateClasses();
     void DrawKernel(SDL_Renderer *renderer, int i);
@@ -35,10 +32,9 @@ class DotFactory
 public:
     DotFactory(int n, int class_count, int w, int h);
     ~DotFactory();
-    void Distribute();
+    void Redistribute();
+    void Normalize();
     void Draw(SDL_Renderer *renderer);
-    Dot operator[](int i) { return dots[i]; }
 };
 
 #endif
-

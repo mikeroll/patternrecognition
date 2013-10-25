@@ -1,7 +1,7 @@
 builddir = build
 cxx = clang++ -fcolor-diagnostics
-cflags = -g -Wall
-libs = -lSDL2 -lm
+cflags = -g -Wall `sdl2-config --cflags`
+libs = `sdl2-config --libs` -lm
 
 rule cxx
   command = $cxx -c $in -o $out
