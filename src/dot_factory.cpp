@@ -37,10 +37,7 @@ void DotFactory::Redistribute()
 {
 
     for (int i = 0; i < class_count; ++i)
-    {
         classes[i].members.clear();
-    }
-
 
     for (int i = 0; i < dots.size(); ++i)
     {
@@ -62,8 +59,9 @@ void DotFactory::Redistribute()
     }
 }
 
-void DotFactory::Normalize()
+bool DotFactory::Normalize()
 {
+    bool trigger = false;
     for (int k = 0; k < class_count; ++k)
     {
         Dot new_kernel;
@@ -83,8 +81,14 @@ void DotFactory::Normalize()
                 new_kernel = classes[k].members[i];
             }
         }
-        classes[k].kernel = new_kernel;
+        if ((classes[k].kernel.x != new_kernel.x) &&
+            (classes[k].kernel.x != new_kernel.x))
+        {
+            classes[k].kernel = new_kernel;
+            trigger = true;
+        }
     }
+    return trigger;
 }
 
 void DotFactory::Draw(SDL_Renderer *renderer)
@@ -118,6 +122,15 @@ void DotFactory::DrawKernel(SDL_Renderer *renderer, int i)
     SDL_RenderDrawLine(renderer, kern.x-delta+1, kern.y, kern.x+delta-1, kern.y);
 }
 
+void DotFactory::KMeans(SDL_Renderer *renderer)
+{
+    do
+    {
+        Redistribute();
+        if (renderer != NULL)
+            Draw(renderer);
+    } while (Normalize());
+}
 
 int main(int argc, char const *argv[])
 {
@@ -129,7 +142,6 @@ int main(int argc, char const *argv[])
 
     int dots = atoi(argv[1]);
     int classes = atoi(argv[2]);
-
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
 
@@ -148,7 +160,8 @@ int main(int argc, char const *argv[])
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    DotFactory *lol = new DotFactory(dots, classes, 1920, 1080);
+    DotFactory *kmeans_demo = new DotFactory(dots, classes, 1920, 1080);
+    kmeans_demo->KMeans(renderer);
 
     // Event loop
     bool out = false;

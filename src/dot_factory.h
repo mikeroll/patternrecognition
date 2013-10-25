@@ -24,17 +24,22 @@ class DotFactory
     std::vector< DotClass > classes;
     std::vector< Dot > dots;
 
+    // Utiltity methods
     void CreatePool();
     void ChooseKernels();
     void CreateClasses();
     void DrawKernel(SDL_Renderer *renderer, int i);
 
+    // Algorithm routines
+    void Redistribute();
+    bool Normalize();
+
 public:
     DotFactory(int n, int class_count, int w, int h);
     ~DotFactory();
-    void Redistribute();
-    void Normalize();
+
     void Draw(SDL_Renderer *renderer);
+    void KMeans(SDL_Renderer *renderer);
 };
 
 #endif
