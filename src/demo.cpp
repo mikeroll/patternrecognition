@@ -24,7 +24,7 @@ int main(int argc, char const *argv[])
     );
 
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1,
-        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
+        SDL_RENDERER_ACCELERATED
     );
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

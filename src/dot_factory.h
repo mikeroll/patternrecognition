@@ -28,6 +28,7 @@ class DotFactory
     void CreatePool();
     void ChooseKernels();
     void CreateClasses(int k);
+    void DrawClass(SDL_Renderer *renderer, int i);
     void DrawKernel(SDL_Renderer *renderer, int i);
 
     // Algorithm routines
