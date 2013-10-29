@@ -26,7 +26,7 @@ class DotFactory
 
     // Utiltity methods
     void CreatePool();
-    void AddClass(int kernel_index);
+    void AddClass(Dot kernel);
     void Reset();
     void DrawClass(SDL_Renderer *renderer, int i);
     void DrawKernel(SDL_Renderer *renderer, int i);
@@ -34,6 +34,7 @@ class DotFactory
     // Algorithm routines
     void Redistribute();
     bool Normalize();
+    bool FindNewKernel();
 
 public:
     DotFactory(int n, int w, int h);
@@ -41,6 +42,7 @@ public:
 
     void Draw(SDL_Renderer *renderer);
     void KMeans(int classes, SDL_Renderer *renderer);
+    void MaxMin(SDL_Renderer *renderer);
 };
 
 #endif

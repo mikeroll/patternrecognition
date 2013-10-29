@@ -30,8 +30,9 @@ int main(int argc, char const *argv[])
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    DotFactory *kmeans_demo = new DotFactory(dots, 1920, 1080);
-    kmeans_demo->KMeans(classes, renderer);
+    DotFactory *demo = new DotFactory(dots, 1920, 1080);
+    // demo->KMeans(classes, renderer);
+    demo->MaxMin(renderer);
 
     // Event loop
     bool out = false;

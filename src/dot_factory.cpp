@@ -25,10 +25,10 @@ void DotFactory::Reset()
     class_count = 0;
 }
 
-void DotFactory::AddClass(int kernel_index)
+void DotFactory::AddClass(Dot kernel)
 {
     DotClass dc;
-    dc.kernel = dots[kernel_index];
+    dc.kernel = kernel;
     dc.color.r = rand() % 128 + 127;
     dc.color.g = rand() % 256;
     dc.color.b = rand() % 256;
@@ -95,43 +95,47 @@ bool DotFactory::Normalize()
     return trigger;
 }
 
-void DotFactory::Draw(SDL_Renderer *renderer)
+bool DotFactory::FindNewKernel()
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_ADD);
-    SDL_RenderClear(renderer);
-    for (int i = 0; i < class_count; ++i)
+    int max_distance = 0;
+    Dot farthest_dot;
+    for (int k = 0; k < class_count; ++k)
     {
-        DrawClass(renderer, i);
-        DrawKernel(renderer, i);
+        for (int i = 0; i < classes[k].members.size(); ++i)
+        {
+            int dx = classes[k].kernel.x - classes[k].members[i].x;
+            int dy = classes[k].kernel.y - classes[k].members[i].y;
+            int distance = dx * dx + dy * dy;
+            if (distance > max_distance)
+            {
+                max_distance = distance;
+                farthest_dot = classes[k].members[i];
+            }
+        }
     }
-    SDL_RenderPresent(renderer);
-}
 
-void DotFactory::DrawClass(SDL_Renderer *renderer, int i)
-{
-    SDL_Point *dots_storage = (SDL_Point *)(&(classes[i].members[0]));
-    SDL_Color *cl = &(classes[i].color);
-    SDL_SetRenderDrawColor(renderer, cl->r, cl->g, cl->b, cl->a);
-    SDL_RenderDrawPoints(renderer, dots_storage,
-        classes[i].members.size());
-}
+    int avg_kernel_spacing = 0;
+    int pairs = 0;
+    for (int i = 0; i < class_count-1; ++i)
+    {
+        for (int j = i + 1; j < class_count; ++j)
+        {
+            int dx = classes[i].kernel.x - classes[j].kernel.x;
+            int dy = classes[i].kernel.y - classes[j].kernel.y;
+            avg_kernel_spacing += dx * dx + dy * dy;
+            pairs++;
 
-void DotFactory::DrawKernel(SDL_Renderer *renderer, int i)
-{
-    int delta = 7;
-    Dot kern = classes[i].kernel;
-    SDL_Rect rect;
-    rect.x = kern.x - delta;
-    rect.y = kern.y - delta;
-    rect.w = delta * 2 + 1;
-    rect.h = rect.w;
-    SDL_RenderFillRect(renderer, &rect);
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 55);
-    SDL_RenderDrawRect(renderer, &rect);
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderDrawLine(renderer, kern.x, kern.y-delta+1, kern.x, kern.y+delta-1);
-    SDL_RenderDrawLine(renderer, kern.x-delta+1, kern.y, kern.x+delta-1, kern.y);
+        }
+    }
+    if (pairs == 0) pairs++;
+
+    bool trigger = false;
+    if (2 * pairs * max_distance > avg_kernel_spacing)
+    {
+        AddClass(farthest_dot);
+        trigger = true;
+    }
+    return trigger;
 }
 
 void DotFactory::KMeans(int k, SDL_Renderer *renderer)
@@ -139,7 +143,7 @@ void DotFactory::KMeans(int k, SDL_Renderer *renderer)
     Reset();
     for (int i = 0; i < k; ++i)
     {
-        AddClass(i);
+        AddClass(dots[i]);
     }
     do
     {
@@ -147,4 +151,22 @@ void DotFactory::KMeans(int k, SDL_Renderer *renderer)
         if (renderer != NULL)
             Draw(renderer);
     } while (Normalize());
+}
+
+void DotFactory::MaxMin(SDL_Renderer *renderer)
+{
+    Reset();
+    Draw(renderer);
+    AddClass(dots[0]);
+    do
+    {
+        Redistribute();
+        Draw(renderer);
+    } while(FindNewKernel());
+    // do
+    // {
+    //     Redistribute();
+    //     if (renderer != NULL)
+    //         Draw(renderer);
+    // } while (Normalize());
 }

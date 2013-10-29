@@ -1,5 +1,5 @@
 builddir = build
-cxx = clang++ -fcolor-diagnostics
+cxx = g++
 cflags = -g -Wall `sdl2-config --cflags`
 libs = `sdl2-config --libs` -lm
 
@@ -12,5 +12,6 @@ rule link
   description = LINK $out
 
 build $builddir/dot_factory.o:  cxx     src/dot_factory.cpp
+build $builddir/draw.o:         cxx     src/draw.cpp
 build $builddir/demo.o:         cxx     src/demo.cpp
-build $builddir/demo:    link    $builddir/dot_factory.o $builddir/demo.o
+build $builddir/demo:           link    $builddir/dot_factory.o $builddir/demo.o $builddir/draw.o
