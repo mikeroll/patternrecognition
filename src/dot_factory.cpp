@@ -121,13 +121,11 @@ bool DotFactory::FindNewKernel()
         {
             avg_kernel_spacing += Distance(classes[i].kernel, classes[j].kernel);
             pairs++;
-
         }
     }
-    if (pairs == 0) pairs++;
 
     bool trigger = false;
-    if (2 * pairs * max_distance > avg_kernel_spacing)
+    if (4 * pairs * max_distance >= avg_kernel_spacing)
     {
         AddClass(farthest_dot);
         trigger = true;
@@ -145,25 +143,22 @@ void DotFactory::KMeans(int k, SDL_Renderer *renderer)
     do
     {
         Redistribute();
-        if (renderer != NULL)
-            Draw(renderer);
+        if (renderer != NULL) Draw(renderer);
     } while (Normalize());
 }
 
 void DotFactory::MaxMin(SDL_Renderer *renderer)
 {
     Reset();
-    Draw(renderer);
     AddClass(dots[0]);
     do
     {
         Redistribute();
-        Draw(renderer);
+        if (renderer != NULL) Draw(renderer);
     } while(FindNewKernel());
-    // do
-    // {
-    //     Redistribute();
-    //     if (renderer != NULL)
-    //         Draw(renderer);
-    // } while (Normalize());
+    do
+    {
+        Redistribute();
+        if (renderer != NULL) Draw(renderer);
+    } while (Normalize());
 }
