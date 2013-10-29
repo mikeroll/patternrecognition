@@ -26,8 +26,8 @@ class DotFactory
 
     // Utiltity methods
     void CreatePool();
-    void ChooseKernels();
-    void CreateClasses(int k);
+    void AddClass(int kernel_index);
+    void Reset();
     void DrawClass(SDL_Renderer *renderer, int i);
     void DrawKernel(SDL_Renderer *renderer, int i);
 

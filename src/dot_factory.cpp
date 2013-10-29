@@ -19,18 +19,22 @@ void DotFactory::CreatePool()
     }
 }
 
-void DotFactory::CreateClasses(int k)
+void DotFactory::Reset()
 {
-    class_count = k;
-    classes.resize(class_count);
-    for (int i = 0; i < class_count; ++i)
-    {
-        classes[i].kernel = dots[i];
-        classes[i].color.r = rand() % 128 + 127;
-        classes[i].color.g = rand() % 256;
-        classes[i].color.b = rand() % 256;
-        classes[i].color.a = 255;
-    }
+    classes.clear();
+    class_count = 0;
+}
+
+void DotFactory::AddClass(int kernel_index)
+{
+    DotClass dc;
+    dc.kernel = dots[kernel_index];
+    dc.color.r = rand() % 128 + 127;
+    dc.color.g = rand() % 256;
+    dc.color.b = rand() % 256;
+    dc.color.a = 255;
+    class_count++;
+    classes.push_back(dc);
 }
 
 void DotFactory::Redistribute()
@@ -132,7 +136,11 @@ void DotFactory::DrawKernel(SDL_Renderer *renderer, int i)
 
 void DotFactory::KMeans(int k, SDL_Renderer *renderer)
 {
-    CreateClasses(k);
+    Reset();
+    for (int i = 0; i < k; ++i)
+    {
+        AddClass(i);
+    }
     do
     {
         Redistribute();
