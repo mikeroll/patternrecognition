@@ -3,6 +3,12 @@
 
 #include "dot_factory.h"
 
+inline int DotFactory::Distance(Dot d1, Dot d2)
+{
+    return (d1.x - d2.x) * (d1.x - d2.x) +
+           (d1.y - d2.y) * (d1.y - d2.y);
+}
+
 DotFactory::DotFactory(int n, int w, int h) : n(n), w(w), h(h)
 {
     srand(time(NULL));
@@ -49,10 +55,7 @@ void DotFactory::Redistribute()
         int candidate;
         for (int k = 0; k < class_count; ++k)
         {
-            Dot kern = classes[k].kernel;
-            int dx = kern.x - dots[i].x;
-            int dy = kern.y - dots[i].y;
-            int newmin = dx * dx + dy * dy;
+            int newmin = Distance(classes[k].kernel, dots[i]);
             if (newmin < min)
             {
                 min = newmin;
@@ -75,9 +78,7 @@ bool DotFactory::Normalize()
             long deviation = 0;
             for (int j = 0; j < classes[k].members.size(); ++j)
             {
-                int dx = classes[k].members[j].x - classes[k].members[i].x;
-                int dy = classes[k].members[j].y - classes[k].members[i].y;
-                deviation += dx * dx + dy * dy;
+                deviation += Distance(classes[k].members[j], classes[k].members[i]);
             }
             if (deviation < min_deviation)
             {
@@ -103,9 +104,7 @@ bool DotFactory::FindNewKernel()
     {
         for (int i = 0; i < classes[k].members.size(); ++i)
         {
-            int dx = classes[k].kernel.x - classes[k].members[i].x;
-            int dy = classes[k].kernel.y - classes[k].members[i].y;
-            int distance = dx * dx + dy * dy;
+            int distance = Distance(classes[k].kernel, classes[k].members[i]);
             if (distance > max_distance)
             {
                 max_distance = distance;
@@ -120,9 +119,7 @@ bool DotFactory::FindNewKernel()
     {
         for (int j = i + 1; j < class_count; ++j)
         {
-            int dx = classes[i].kernel.x - classes[j].kernel.x;
-            int dy = classes[i].kernel.y - classes[j].kernel.y;
-            avg_kernel_spacing += dx * dx + dy * dy;
+            avg_kernel_spacing += Distance(classes[i].kernel, classes[j].kernel);
             pairs++;
 
         }

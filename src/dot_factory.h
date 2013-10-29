@@ -35,6 +35,7 @@ class DotFactory
     void Redistribute();
     bool Normalize();
     bool FindNewKernel();
+    int Distance(Dot d1, Dot d2);
 
 public:
     DotFactory(int n, int w, int h);
