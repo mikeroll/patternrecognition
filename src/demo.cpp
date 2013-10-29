@@ -4,14 +4,14 @@
 
 int main(int argc, char const *argv[])
 {
-    if (argc != 3)
+    if (argc < 3)
     {
-        puts("Usage: dot_factory <elements> <classes>");
+        puts("Usage: demo <elements> <method> [params]");
         exit(EXIT_FAILURE);
     }
 
     int dots = atoi(argv[1]);
-    int classes = atoi(argv[2]);
+    const char *method = argv[2];
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
 
@@ -31,8 +31,28 @@ int main(int argc, char const *argv[])
     SDL_RenderClear(renderer);
 
     DotFactory *demo = new DotFactory(dots, 1920, 1080);
-    // demo->KMeans(classes, renderer);
-    demo->MaxMin(renderer);
+
+    if (strcmp(method, "kmeans") == 0)
+    {
+        if ((argv[3] != NULL) && (atoi(argv[3]) > 1))
+        {
+            demo->KMeans(atoi(argv[3]), renderer);
+        }
+        else
+        {
+            puts("Number of classes should be non-zero.");
+            exit(EXIT_FAILURE);
+        }
+    }
+    else if (strcmp(method, "maxmin") == 0)
+    {
+        demo->MaxMin(renderer);
+    }
+    else
+    {
+        puts("Method should be either maxmin or kmeans.");
+        exit(EXIT_FAILURE);
+    }
 
     // Event loop
     bool out = false;
